@@ -14,7 +14,7 @@ class App {
   private middleware(): void {
     this.server.use(cors());
     this.server.use(express.json());
-    this.server.use(router);
+    this.server.use('/', router);
   }
 
   initialize(): void {
