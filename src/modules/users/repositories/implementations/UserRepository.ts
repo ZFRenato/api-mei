@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { IUser } from "modules/users/entities/IUser";
 import { User } from "../../entities/User";
 import { ICreateUserDTO, IUserRepository } from "../IUserRepository";
 
@@ -10,8 +11,9 @@ class UserRepository implements IUserRepository {
         this.repository = repository
     }
 
-    async create({ name, phone, email, type, password }: ICreateUserDTO): Promise<User> {
-        const newUser = new User(name, email, type, phone, password);
+    async create({ name, phone, email, type, password }: ICreateUserDTO): Promise<IUser> {
+        const newUser = new User(name, email, password, undefined, type, phone);
+        await newUser.cryptPassword();
         const result = await this.repository.user.create({
             data: newUser
         })
@@ -19,12 +21,12 @@ class UserRepository implements IUserRepository {
         return result;
     }
 
-    async listAll(): Promise<User[]> {
+    async listAll(): Promise<IUser[]> {
         const result = await this.repository.user.findMany();
         return result;
     }
 
-    async findById(id: string): Promise<User> {
+    async findById(id: string): Promise<IUser> {
         const result = await this.repository.user.findUnique({
             where: {
                 id
@@ -33,7 +35,7 @@ class UserRepository implements IUserRepository {
         return result;
     }
 
-    async findByEmail(email: string): Promise<User> {
+    async findByEmail(email: string): Promise<IUser> {
         const result = await this.repository.user.findUnique({
             where: {
                 email
@@ -42,7 +44,7 @@ class UserRepository implements IUserRepository {
         return result;
     }
 
-    async deleteUser(id: string): Promise<User> {
+    async deleteUser(id: string): Promise<IUser> {
         const result = await this.repository.user.delete({
             where: {
                 id

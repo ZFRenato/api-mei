@@ -1,5 +1,6 @@
 import { IUserRepository } from "../../repositories/IUserRepository";
-import { User } from "../../entities/User";
+import { IUser } from "../../entities/IUser";
+import { clientCache } from "../../../../utils/Cache";
 
 interface IRequest {
     name: string,
@@ -17,8 +18,11 @@ class CreateUserCase {
         this.userRepository = userRepository;
     }
 
-    async execute({name, phone, email, type, password }: IRequest): Promise<User> {
+    async execute({name, phone, email, type, password }: IRequest): Promise<IUser> {
         const isExist = await this.userRepository.findByEmail(email);
+        const redis = clientCache();
+        await redis.connect();
+        const result = await redis.setEx('02', 60, JSON.stringify({ name, phone, email, type, password }));
         
         if (isExist) {
             

@@ -1,4 +1,4 @@
-import { User } from '../entities/User';
+import { IUser } from '../entities/IUser';
 
 interface ICreateUserDTO {
     name: string,
@@ -9,11 +9,11 @@ interface ICreateUserDTO {
 }
 
 interface IUserRepository {
-    create({ name, phone, email, type, password }:ICreateUserDTO): Promise <User>;
-    listAll(): Promise <User[]>;
-    findById(id: string): Promise <User> | undefined;
-    findByEmail(email: string): Promise <User> | undefined;
-    deleteUser(id: string): Promise <User> | undefined;
+    create({ name, phone, email, type, password }:ICreateUserDTO): Promise <IUser>;
+    listAll(): Promise <IUser[]>;
+    findById(id: string): Promise <IUser> | undefined;
+    findByEmail(email: string): Promise <IUser> | undefined;
+    deleteUser(id: string): Promise <IUser> | undefined;
 }
 
 export {

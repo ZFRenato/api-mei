@@ -1,5 +1,60 @@
 version: '3.8'
+
 services:
+  nodejs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: node
+    container_name: app
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - .:/src/app
+    networks:
+      - app-network      
+    command: >
+      sh -c "./wait-for db:5432 -- npm run dev"
+    depends_on:
+      - postgres
+      - cache
+  
+  prisma-migrate:
+    build:
+      context: prisma
+      dockerfile: Dockerfile
+    restart: 'no'
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    command: prisma migrate dev --name init
+    networks:
+      - app-network  
+    depends_on:
+      - nodejs
+
+  redis-overcommit:
+    build: https://github.com/bkuhl/redis-overcommit-on-host.git
+    restart: 'no'
+    privileged: true
+    volumes:
+      - /proc/sys/vm:/mnt/vm
+  
+  cache:
+    image: 'redis:6.2-alpine'
+    restart: always
+    env_file: .env    
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    command: redis-server --save 20 1 --loglevel warning
+    networks:
+      - app-network
+    volumes:
+      - cache:/data
+    depends_on:
+      - redis-overcommit
+
   postgres:
     image: postgres:10.3
     container_name: db
@@ -12,5 +67,13 @@ services:
       - postgres_db:/vars/lib/postgresql/data
     ports:
       - '5432:5432'
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
 volumes:
   postgres_db:
+  cache:
