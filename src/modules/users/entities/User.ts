@@ -12,7 +12,7 @@ class User implements IUser{
     password: string
 
     constructor(name: string, email: string, password: string, id?: string, type?: string, phone?: string) {   
-        this.id = id;
+        this.id = id ?? this.id;
         this.name = name;
         this.email = email;
         this.type = type;
