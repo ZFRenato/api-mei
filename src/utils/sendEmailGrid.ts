@@ -31,8 +31,8 @@ class SendMail {
             to: this.EmailTo,
             from: this.EmailFrom,
             subject: 'Confirmação de Email / Mei-Brasil',
-            text: `Click no Link para confirmar https://github.com/winstonjs/winston`,
-            html: "Click no Link para Confirmar <a href='https://github.com/winstonjs/winston' target='_blanck'>Aqui</a>"
+            text: `Click no Link para confirmar http://localhost:3003/user/check-email/${id}`,
+            html: `Click no Link para Confirmar <a href='http://localhost:3003/user/check-email/${id}' target='_blanck'>Aqui</a>`
         }
         try {
             const result = await this.sendGrid.send(msg);

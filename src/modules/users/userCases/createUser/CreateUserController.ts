@@ -12,20 +12,17 @@ class CreateUserController {
     }
 
     async handle (request: Request, response: Response): Promise<Response> {
-        const { name, phone, email, type, password } = request.body;
+        const { id } = request.params;
         try {
-            const newUser = await this.createUserCase.execute({ name, phone, email, type, password });
-            const sendMail = new SendMail(newUser.email);
-            await sendMail.emailConfirmation(newUser.id);
+            const newUser = await this.createUserCase.execute({ id });
 
-            logger.info(newUser);
             return response.status(201).json({
                 user: newUser
             })
         } catch (error) {
             logger.error(error);
             return response.status(500).json({
-                error: error.message
+                error: 'failed register process'
             })
         }
     }

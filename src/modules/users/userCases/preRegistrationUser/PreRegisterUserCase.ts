@@ -32,9 +32,8 @@ class PreRegisterUserCase {
 
             const redis = clientCache();
             await redis.connect();
-            console.log(newUser.id,60*60*24, JSON.stringify(newUser))
             await redis.setEx(newUser.id,60*60*24, JSON.stringify(newUser));
-            //await redis.disconnect();
+            await redis.disconnect();
 
             return newUser;
     }
