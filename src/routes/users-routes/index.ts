@@ -1,10 +1,12 @@
-import { response, Router } from "express";
+import { Router } from "express";
 
 import createUserController from "../../modules/users/userCases/createUser";
 import listUsersController from "../../modules/users/userCases/listUsers";
 import preRegisterUserController from "../../modules/users/userCases/preRegistrationUser";
+import loginUserController from "../../modules/users/userCases/loginUser";
 
 const routerUsers = Router();
+
 
 // Create Pre-register of user
 
@@ -24,8 +26,10 @@ routerUsers.get("/", async (request, response) => {
   return await listUsersController().handle(request, response);
 });
 
-// Login User
+// Loggin User
 
-routerUsers.post("/login", async (request, reponse) => {});
+routerUsers.post("/login", async (request, response) => {
+  return await loginUserController().handle(request, response);
+});
 
 export { routerUsers };

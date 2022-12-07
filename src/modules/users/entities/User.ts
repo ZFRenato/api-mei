@@ -28,7 +28,6 @@ class User implements IUser {
   }
 
   async cryptPassword(): Promise<void> {
-    const secret = process.env.SECRET_KEY;
     const salt = 8;
     const hash = await bcrypt.hash(this.password, salt);
     this.password = hash;
