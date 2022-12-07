@@ -1,45 +1,45 @@
+import { clientCache } from "../../../../utils/Cache";
 import { IUser } from "../../entities/IUser";
 import { User } from "../../entities/User";
 import { IUserRepository } from "../../repositories/IUserRepository";
-import { clientCache } from "../../../../utils/Cache";
 
 interface IRequest {
-    name: string,
-    phone: string,
-    email: string,
-    type: string,
-    password: string,
+  name: string;
+  phone: string;
+  email: string;
+  type: string;
+  password: string;
 }
-
 
 class PreRegisterUserCase {
-    private userRepository: IUserRepository;
+  private userRepository: IUserRepository;
 
-    constructor (userRepository: IUserRepository) {
-        this.userRepository = userRepository;
+  constructor(userRepository: IUserRepository) {
+    this.userRepository = userRepository;
+  }
+
+  async execute({
+    name,
+    phone,
+    email,
+    type,
+    password,
+  }: IRequest): Promise<IUser> {
+    const userAlreadyExist = await this.userRepository.findByEmail(email);
+    if (userAlreadyExist) {
+      throw new Error("Email Already registration");
     }
 
-    async execute ({ name, phone, email, type, password }: IRequest): Promise<IUser> {
+    const newUser = new User(name, email, password, undefined, type, phone);
+    await newUser.cryptPassword();
 
-        
-            const userAlreadyExist = await this.userRepository.findByEmail(email);
-            if (userAlreadyExist) {
-                throw new Error("Email Already registration");            
-            }
+    const redis = clientCache();
+    await redis.connect();
+    await redis.setEx(newUser.id, 60 * 60 * 24, JSON.stringify(newUser));
+    await redis.disconnect();
 
-            const newUser = new User(name, email, password, undefined, type, phone);
-            await newUser.cryptPassword();
-
-            const redis = clientCache();
-            await redis.connect();
-            await redis.setEx(newUser.id,60*60*24, JSON.stringify(newUser));
-            await redis.disconnect();
-
-            return newUser;
-    }
-
+    return newUser;
+  }
 }
 
-export {
-    PreRegisterUserCase
-}
+export { PreRegisterUserCase };

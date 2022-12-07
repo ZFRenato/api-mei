@@ -1,19 +1,16 @@
-import { User } from "../../entities/User";
+import { IUser } from "../../entities/IUser";
 import { IUserRepository } from "../../repositories/IUserRepository";
 
-
 class ListUsersCase {
-    private repository: IUserRepository
+  private repository: IUserRepository;
 
-    constructor (repository: IUserRepository) {
-        this.repository = repository;
-    }
+  constructor(repository: IUserRepository) {
+    this.repository = repository;
+  }
 
-    async execute(): Promise<User[]> {
-        return await this.repository.listAll();
-    }
+  async execute(): Promise<IUser[]> {
+    return this.repository.listAll();
+  }
 }
 
-export {
-    ListUsersCase
-}
+export { ListUsersCase };
