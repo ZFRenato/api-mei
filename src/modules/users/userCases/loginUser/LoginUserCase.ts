@@ -25,7 +25,7 @@ class LoginUserCase {
         throw new Error("password incorrect");
     }
 
-    const expireTime = 3*60*60
+    const expireTime = 3*60*60;
 
     const generationToken = jwt.sign({
         email: userFound.email,

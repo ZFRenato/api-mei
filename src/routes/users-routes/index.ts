@@ -4,6 +4,7 @@ import createUserController from "../../modules/users/userCases/createUser";
 import listUsersController from "../../modules/users/userCases/listUsers";
 import preRegisterUserController from "../../modules/users/userCases/preRegistrationUser";
 import loginUserController from "../../modules/users/userCases/loginUser";
+import { auth } from "../../middleware/Auth";
 
 const routerUsers = Router();
 
@@ -22,7 +23,8 @@ routerUsers.get("/check-email/:id", async (request, response) => {
 
 // List all users
 
-routerUsers.get("/", async (request, response) => {
+routerUsers.get("/", auth, async (request, response) => {
+  console.log('👻👻', request.body.user_acess);
   return await listUsersController().handle(request, response);
 });
 
